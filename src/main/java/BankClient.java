@@ -8,7 +8,7 @@ import java.util.Scanner;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RestApiClient {
+public class BankClient {
 
     public static void main(String[] args) throws IOException{
 
