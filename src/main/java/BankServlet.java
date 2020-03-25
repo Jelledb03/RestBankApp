@@ -14,21 +14,23 @@ public class BankServlet extends HttpServlet {
 
         String requestUrl = request.getRequestURI();
         String name = requestUrl.substring("restwebapp_war_exploded/bank/".length());
+        StringBuilder builder = new StringBuilder(name);
+        builder.deleteCharAt(0);
+        name = builder.toString();
+        BankAccount bankAccount = BankStorage.getInstance().getPerson(name);
 
-        Person person = DataStore.getInstance().getPerson(name);
-
-        if(person != null){
+        if(bankAccount != null){
             String json = "{\n";
-            json += "\"name\": " + JSONObject.quote(person.getName()) + ",\n";
-            json += "\"about\": " + JSONObject.quote(person.getAbout()) + ",\n";
-            json += "\"birthYear\": " + person.getBirthYear() + "\n";
+            json += "\"name\": " + JSONObject.quote(bankAccount.getFirstName()) + ",\n";
+            json += "\"lastName\": " + JSONObject.quote(bankAccount.getLastName()) + ",\n";
+            json += "\"address\": " + JSONObject.quote(bankAccount.getAddress()) + ",\n";
+            json += "\"balance\": " + bankAccount.getBalance() + "\n";
             json += "}";
             response.getOutputStream().println(json);
         }
         else{
             //That person wasn't found, so return an empty JSON object. We could also return an error.
-            response.getOutputStream().println(name);
-            //response.getOutputStream().println("{}");
+            response.getOutputStream().println("No Bankaccount found for: " + name);
         }
     }
 
@@ -38,9 +40,10 @@ public class BankServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
         String name = request.getParameter("name");
-        String about = request.getParameter("about");
-        int birthYear = Integer.parseInt(request.getParameter("birthYear"));
+        String firstName = request.getParameter("firstName");
+        String address = request.getParameter("Address");
+        int balance = Integer.parseInt(request.getParameter("balance"));
 
-        DataStore.getInstance().putPerson(new Person(name, about, birthYear));
+        BankStorage.getInstance().putPerson(new BankAccount(name, firstName, address, balance));
     }
 }
